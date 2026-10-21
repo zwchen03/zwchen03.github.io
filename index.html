@@ -909,9 +909,15 @@ applyLang();
   show(); sync();
 })();
 
-// ---- header motto, typed out once ----
+// ---- header motto: one of a few lines, picked at random and typed out once ----
 (function(){
-  const el=document.getElementById("motto"), text="May everything you work for have a romantic outcome in the future.";
+  const MOTTOS=[
+    "May everything you work for have a romantic outcome in the future.",
+    "May the world treat you gently.",                                                                   // 愿你被这世界温柔以待
+    "The romance of the universe and every bit of warmth in this world are worth moving forward for."   // 宇宙山河浪漫，人间点滴温暖都值得我们前进
+  ];
+  const el=document.getElementById("motto"), text=MOTTOS[Math.floor(Math.random()*MOTTOS.length)];
+  el.parentElement.setAttribute("aria-label",text);
   if(matchMedia("(prefers-reduced-motion: reduce)").matches){ el.textContent=text; return; }
   let i=0;
   (function tick(){ el.textContent=text.slice(0,++i); if(i<text.length) setTimeout(tick,text[i-1]===","||text[i-1]==="."?260:55); })();
