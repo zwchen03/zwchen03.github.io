@@ -110,8 +110,6 @@ section{scroll-margin-top:70px}
   opacity:0;transform:translateY(-6px);transition:opacity .15s,transform .15s;pointer-events:none}
 .bubble::after{content:"";position:absolute;left:40px;top:-8px;width:10px;height:10px;background:var(--panel);border:2px solid var(--ink);border-bottom:0;border-right:0;transform:rotate(45deg)}
 .bubble.on{opacity:1;transform:none}
-.star{position:absolute;left:45px;top:45px;width:6px;height:6px;pointer-events:none;animation:star .9s steps(6) forwards}
-@keyframes star{to{transform:translate(var(--dx),var(--dy));opacity:0}}
 .listen{display:flex;align-items:center;gap:7px;font:9px/1 "Press Start 2P",monospace;color:#C8352E;letter-spacing:.04em}
 .listen svg{width:16px;height:14px;display:block;animation:beat 1.2s steps(2) infinite}
 @keyframes beat{50%{transform:scale(1.18)}}
@@ -251,7 +249,7 @@ footer a:hover{color:var(--accent-d)}
 #lb img{max-width:min(1400px,100%);max-height:100%;background:#fff;padding:12px;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
 
 ::selection{background:var(--accent);color:#fff}
-@media (prefers-reduced-motion: reduce){.sprite.hop,.star,.listen svg,.sprite,.caret,.where .time i,.scene .cloud{animation:none}.glass{transition:none}html{scroll-behavior:auto}}
+@media (prefers-reduced-motion: reduce){.sprite.hop,.listen svg,.sprite,.caret,.where .time i,.scene .cloud{animation:none}.glass{transition:none}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
@@ -264,7 +262,7 @@ footer a:hover{color:var(--accent-d)}
       <a href="#research" data-i18n="navResearch">Research</a>
       <a href="#education" data-i18n="navEducation">Education</a>
       <a href="#coding" data-i18n="navProgramming">Programming</a>
-      <a href="mailto:zwchen2003@gmail.com" data-i18n="navContact">Contact</a>
+      <a href="mailto:zwchen2003@gmail.com" data-copy-email data-i18n="navContact">Contact</a>
     </nav>
     <div class="tools">
       <button id="lang" aria-label="Switch language">中文</button>
@@ -889,37 +887,21 @@ const legacyCopy=txt=>new Promise((ok,fail)=>{
 });
 const copyText=txt=>navigator.clipboard?navigator.clipboard.writeText(txt).catch(()=>legacyCopy(txt)):legacyCopy(txt);
 
-// ---- click the email to copy it ----
-document.querySelector(".mail").addEventListener("click",e=>{
+// ---- click the email (or "Contact" in the nav) to copy it ----
+document.querySelectorAll(".mail,[data-copy-email]").forEach(el=>el.addEventListener("click",e=>{
   e.preventDefault();
   copyText(EMAIL).then(()=>toast(t2("邮箱已复制 ✓","Email copied ✓")),()=>{ location.href="mailto:"+EMAIL; });
-});
+}));
 
-// ---- poke the avatar: hop + speech bubble; 7 pokes in a row summon Brother No.7 ----
+// ---- poke the avatar: hop + "hello" bubble ----
 (function(){
   const img=document.querySelector(".avatar .sprite"), box=img.parentElement;
   const bubble=document.createElement("div"); bubble.className="bubble"; bubble.setAttribute("aria-live","polite"); box.appendChild(bubble);
-  const LINES={
-    zh:["你好呀！","今天也要加油！","要不要一起写代码？","葫芦娃，葫芦娃～","在训练模型，别吵 zzz","点我干嘛 (・∀・)","欢迎常来玩！"],
-    en:["Hi there!","Keep going today!","Wanna code together?","Calabash brothers~","Training models... zzz","Why poke me? (・∀・)","Come back anytime!"]
-  };
-  let pokes=0, pokeT=0, bubbleT=0, lastLine=-1;
-  const say=txt=>{ bubble.textContent=txt; bubble.classList.add("on"); clearTimeout(bubbleT); bubbleT=setTimeout(()=>bubble.classList.remove("on"),2200); };
-  const burst=()=>{
-    const colors=["#7B4BB7","#A57FDB","#F2CF6E","#E0403A"];
-    for(let k=0;k<16;k++){
-      const s=document.createElement("i"), ang=k/16*Math.PI*2, d=56+Math.random()*34;
-      s.className="star"; s.style.background=colors[k%colors.length];
-      s.style.setProperty("--dx",`${Math.cos(ang)*d}px`); s.style.setProperty("--dy",`${Math.sin(ang)*d}px`);
-      box.appendChild(s); setTimeout(()=>s.remove(),950);
-    }
-  };
+  let bubbleT=0;
   const poke=()=>{
     img.classList.remove("hop"); void img.offsetWidth; img.classList.add("hop");
-    clearTimeout(pokeT); pokeT=setTimeout(()=>{ pokes=0; },2500);
-    if(++pokes>=7){ pokes=0; say(t2("七娃登场！✦","Brother No.7 is here! ✦")); burst(); return; }
-    const lines=LINES[lang]; let i; do{ i=Math.floor(Math.random()*lines.length); }while(i===lastLine);
-    lastLine=i; say(lines[i]);
+    bubble.textContent=t2("你好呀！","Hi there!"); bubble.classList.add("on");
+    clearTimeout(bubbleT); bubbleT=setTimeout(()=>bubble.classList.remove("on"),2200);
   };
   img.addEventListener("animationend",e=>{ if(e.animationName==="hop") img.classList.remove("hop"); });
   img.setAttribute("role","button"); img.tabIndex=0;
