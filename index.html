@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Zhiwei Chen</title>
+<title>陈志伟</title>
 <meta name="description" content="Zhiwei Chen — M.Eng. student at SCUT working on pathology foundation models: distillation, debiasing and interpretability.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600&display=swap" rel="stylesheet">
@@ -471,8 +471,8 @@ const I18N = {
   }
 };
 const root = document.documentElement;
-let lang = "en";
-try{ if(localStorage.getItem("lang")==="zh") lang="zh"; }catch(e){}
+let lang = "zh";  // default to Chinese; a visitor's saved choice or ?lang= still wins
+try{ const v=localStorage.getItem("lang"); if(v==="en"||v==="zh") lang=v; }catch(e){}
 const qLang = new URLSearchParams(location.search).get("lang");
 if(qLang==="zh" || qLang==="en") lang=qLang;
 const T = k => I18N[lang][k];
