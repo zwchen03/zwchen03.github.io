@@ -60,13 +60,28 @@ header .wrap{display:flex;align-items:center;gap:24px;height:54px}
 .motto{min-width:0;flex:0 1 auto;white-space:nowrap;overflow:hidden;font:italic 15px var(--serif);color:var(--muted)}
 .motto .caret{height:14px;vertical-align:-1px;margin-left:3px}
 @media(max-width:1000px){.motto{display:none}}
-header nav{display:flex;gap:22px;margin-left:auto;font-size:13.5px}
+header nav{display:flex;gap:22px;font-size:13.5px}
+/* header music player */
+.mp{display:flex;align-items:center;gap:2px;margin-left:auto;flex:0 1 280px;min-width:0;height:32px;padding:0 10px 0 3px;border:1px solid var(--line-strong);background:var(--panel)}
+.mp-btn{flex:none;width:24px;height:24px;display:grid;place-items:center;background:none;border:0;padding:0;color:var(--muted);cursor:pointer}
+.mp-btn svg{width:9px;height:11px;display:block}
+.mp-btn:hover,.mp-play{color:var(--accent-d)}
+.mp-info{flex:1;min-width:0;margin-left:6px}
+.mp-title{overflow:hidden;white-space:nowrap;font:12px/16px var(--mono);color:var(--muted)}
+.mp-title span{display:inline-block;padding-right:12px}
+.mp.playing .mp-title{color:var(--ink)}
+.mp-title.scroll span{animation:marquee var(--dur) linear infinite alternate}
+@keyframes marquee{0%,15%{transform:none}85%,100%{transform:translateX(calc(-1 * var(--dist)))}}
+.mp-bar{height:3px;margin-top:3px;background:var(--sand);cursor:pointer}
+.mp-bar i{display:block;height:100%;width:0;background:var(--accent)}
+@media(max-width:1000px){.mp{flex-basis:220px}}
+@media(max-width:560px){.mp{flex:none;padding-right:3px}.mp-info{display:none}}
 header nav a{text-decoration:none;color:var(--muted)}
 header nav a:hover{color:var(--ink)}
 .tools{display:flex;gap:8px}
 .tools button{font:500 12.5px var(--mono);background:transparent;color:var(--muted);border:1px solid var(--line-strong);padding:4px 10px;cursor:pointer;min-width:52px}
 .tools button:hover{color:var(--ink);border-color:var(--ink)}
-@media(max-width:700px){header nav{display:none}.tools{margin-left:auto}}
+@media(max-width:700px){header nav{display:none}}
 
 section{scroll-margin-top:70px}
 .card{background:var(--panel);border:1px solid var(--line);box-shadow:3px 3px 0 var(--shadow);padding:22px 24px;min-width:0}
@@ -246,7 +261,7 @@ footer a:hover{color:var(--accent-d)}
 #lb img{max-width:min(1400px,100%);max-height:100%;background:#fff;padding:12px;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
 
 ::selection{background:var(--accent);color:#fff}
-@media (prefers-reduced-motion: reduce){.tags .chip:hover,.listen svg,.sprite,.caret,.where .time i,.scene .cloud{animation:none}.glass{transition:none}html{scroll-behavior:auto}}
+@media (prefers-reduced-motion: reduce){.mp-title.scroll span{animation:none}.tags .chip:hover,.listen svg,.sprite,.caret,.where .time i,.scene .cloud{animation:none}.glass{transition:none}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
@@ -255,6 +270,13 @@ footer a:hover{color:var(--accent-d)}
   <div class="wrap">
     <a class="logo" href="#">ZW.CHEN</a>
     <div class="motto" aria-label="May everything you work for have a romantic outcome in the future."><span id="motto" aria-hidden="true"></span><i class="caret"></i></div>
+    <div class="mp" id="mp" role="group" aria-label="Music player">
+      <button class="mp-btn" id="mpPrev" type="button" aria-label="Previous track"></button>
+      <button class="mp-btn mp-play" id="mpPlay" type="button" aria-label="Play"></button>
+      <button class="mp-btn" id="mpNext" type="button" aria-label="Next track"></button>
+      <div class="mp-info"><div class="mp-title"><span id="mpTitle"></span></div><div class="mp-bar" id="mpBar"><i id="mpFill"></i></div></div>
+      <audio id="mpAudio" preload="none"></audio>
+    </div>
     <nav>
       <a href="#research" data-i18n="navResearch">Research</a>
       <a href="#education" data-i18n="navEducation">Education</a>
@@ -280,7 +302,7 @@ footer a:hover{color:var(--accent-d)}
               <path fill="#E0403A" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/>
               <path fill="#F59A93" d="M1 1h1v1H1z"/>
             </svg>
-            <span>Listen</span>
+            <span>Listen.</span>
           </div>
         </div>
         <div class="where">
@@ -396,7 +418,7 @@ footer a:hover{color:var(--accent-d)}
           <div class="venue"><b>MICCAI 2026</b><span class="meta" data-i18n="p1Meta">Early Accept · First author</span></div>
           <h3>SmartStu</h3>
           <div class="t">Harnessing Adversarial Distillation to Customise Debiased, Disease-Specific Pathology Foundation Models for Breast Cancer</div>
-          <div class="hl" data-i18n="p1Hl">30× compression; surpasses the teacher (AUC 0.994)</div>
+          <div class="hl" data-i18n="p1Hl">Multi-teacher adversarial distillation for debiased, breast-cancer-specific models</div>
           <div class="links"><a href="https://arxiv.org/abs/2608.01356" target="_blank" rel="noopener">arXiv</a><a href="https://github.com/zwchen03/advDistall" target="_blank" rel="noopener">Code</a></div>
         </div>
       </article>
@@ -408,7 +430,7 @@ footer a:hover{color:var(--accent-d)}
           <div class="venue"><b class="g">MICCAI 2026 WS</b><span class="meta" data-i18n="p3Meta">Oral · Second author</span></div>
           <h3>G-Interp</h3>
           <div class="t">Cellular-Communication-Level Interpretability for Pathology Foundation Models via Graph Distillation on Microenvironment</div>
-          <div class="hl" data-i18n="p3Hl">Cell-level interpretability with 20× compression</div>
+          <div class="hl" data-i18n="p3Hl">Graph distillation that explains pathology models at the cell-communication level</div>
           <div class="links"><a href="https://arxiv.org/abs/2609.26073" target="_blank" rel="noopener">arXiv</a></div>
         </div>
       </article>
@@ -459,9 +481,9 @@ const I18N = {
     chipSch:"Merit Student Scholarship", chipStar:"Academic Excellence Award",
     chipMd:"Mingdong Scholarship", chipThesis:"Outstanding Thesis (Innovation)",
     researchTitle:"Selected Research", researchHint:"Click a figure to enlarge",
-    p1Meta:"Early Accept · First author", p1Hl:"30× compression; surpasses the teacher (AUC 0.994)",
+    p1Meta:"Early Accept · First author", p1Hl:"Multi-teacher adversarial distillation for debiased, breast-cancer-specific models",
     p2Meta:"In preparation · First author", p2Hl:"+4.3 average gain across five MIL backbones",
-    p3Meta:"Oral · Second author", p3Hl:"Cell-level interpretability with 20× compression",
+    p3Meta:"Oral · Second author", p3Hl:"Graph distillation that explains pathology models at the cell-communication level",
     p4Meta:"Third author", p4Hl:"Optimal transport for cross-domain link prediction",
     soon:"Coming soon",
     city:"Guangzhou", absBtn:"Abstract", termHint:"Press ~ for a terminal", codingLbl:"LeetCode", solvedCap:"problems solved",
@@ -488,9 +510,9 @@ const I18N = {
     chipRank:"GPA Rank 4 / 771", chipGrad:"校级优秀毕业生", chipByd:"比亚迪奖学金",
     chipSch:"校级优秀学生奖学金", chipStar:"学习标兵奖学金", chipMd:"明动优秀学生奖学金", chipThesis:"优秀毕业设计（创新奖）",
     researchTitle:"代表性研究", researchHint:"点击框架图可放大",
-    p1Meta:"Early Accept · 第一作者", p1Hl:"模型压缩 30 倍以上，性能超越教师模型（AUC 0.994）",
+    p1Meta:"Early Accept · 第一作者", p1Hl:"多教师对抗蒸馏，定制去偏的乳腺癌专用病理模型",
     p2Meta:"准备中 · 第一作者", p2Hl:"5 种 MIL 骨干网络平均提升 4.3",
-    p3Meta:"口头报告 · 第二作者", p3Hl:"细胞级可解释性，参数压缩 20 倍以上",
+    p3Meta:"口头报告 · 第二作者", p3Hl:"图蒸馏解释病理基础模型的细胞间通讯",
     p4Meta:"第三作者", p4Hl:"基于最优传输的跨域链路预测",
     soon:"即将公开",
     city:"广州", absBtn:"摘要", termHint:"按 ~ 打开终端", codingLbl:"力扣", solvedCap:"已解决题目",
@@ -838,6 +860,53 @@ applyLang();
     const cur=window.sceneWeatherKind?window.sceneWeatherKind():"clear", next=ORDER[(ORDER.indexOf(cur)+1)%ORDER.length];
     window.sceneWeather(next); toast((lang==="zh"?"风景画天气：":"Landscape weather: ")+LABEL[next][lang==="zh"?1:0]);
   });
+})();
+
+// ---- header music player: tracks live in assets/music (originals in bgm/ stay local) ----
+(function(){
+  const LIST=[
+    {src:"assets/music/secret-base.mp3", title:"Secret Base (吉他版)", artist:"uBio高尾和树"},
+    {src:"assets/music/the-dawn.mp3", title:"The Dawn", artist:"Dreamtale"},
+    {src:"assets/music/the-truth-that-you-leave.mp3", title:"The truth that you leave", artist:"Pianoboy高至豪"}
+  ];
+  const box=document.getElementById("mp"), audio=document.getElementById("mpAudio"), playBtn=document.getElementById("mpPlay");
+  const title=document.getElementById("mpTitle"), titleBox=title.parentElement, bar=document.getElementById("mpBar"), fill=document.getElementById("mpFill");
+  const icon=rows=>`<svg viewBox="0 0 ${rows[0].length} ${rows.length}" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true">`+
+    rows.map((row,y)=>[...row].map((c,x)=>c==="X"?`<rect x="${x}" y="${y}" width="1" height="1"/>`:"").join("")).join("")+"</svg>";
+  const PLAY=icon(["X....","XX...","XXX..","XXXX.","XXX..","XX...","X...."]);
+  const PAUSE=icon(["XX.XX","XX.XX","XX.XX","XX.XX","XX.XX","XX.XX","XX.XX"]);
+  document.getElementById("mpPrev").innerHTML=icon(["X...X","X..XX","X.XXX","XXXXX","X.XXX","X..XX","X...X"]);
+  document.getElementById("mpNext").innerHTML=icon(["X...X","XX..X","XXX.X","XXXXX","XXX.X","XX..X","X...X"]);
+  audio.volume=.6;
+
+  let i=0;
+  try{ const v=parseInt(localStorage.getItem("mpTrack"),10); if(v>=0&&v<LIST.length) i=v; }catch(e){}
+  const marquee=()=>{   // scroll the title back and forth while playing if it does not fit
+    titleBox.classList.remove("scroll");
+    const d=title.scrollWidth-titleBox.clientWidth;
+    if(d>4&&!audio.paused){ titleBox.style.setProperty("--dist",d+"px"); titleBox.style.setProperty("--dur",Math.max(5,d/14)+"s"); titleBox.classList.add("scroll"); }
+  };
+  const show=()=>{
+    const t=LIST[i]; title.textContent=`${t.title} · ${t.artist}`; box.title=`♪ ${title.textContent}`;
+    if("mediaSession" in navigator) navigator.mediaSession.metadata=new MediaMetadata({title:t.title,artist:t.artist,artwork:[{src:"apple-touch-icon.png",sizes:"180x180",type:"image/png"}]});
+    marquee();
+  };
+  const load=k=>{ i=(k+LIST.length)%LIST.length; audio.src=LIST[i].src; fill.style.width="0"; show(); try{ localStorage.setItem("mpTrack",i); }catch(e){} };
+  const start=()=>audio.play().catch(()=>{});
+  const sync=()=>{ const on=!audio.paused; playBtn.innerHTML=on?PAUSE:PLAY; playBtn.setAttribute("aria-label",on?"Pause":"Play"); box.classList.toggle("playing",on); marquee(); };
+
+  playBtn.addEventListener("click",()=>{ if(!audio.getAttribute("src")) load(i); audio.paused?start():audio.pause(); });
+  document.getElementById("mpPrev").addEventListener("click",()=>{ load(i-1); start(); });
+  document.getElementById("mpNext").addEventListener("click",()=>{ load(i+1); start(); });
+  audio.addEventListener("play",sync); audio.addEventListener("pause",sync);
+  audio.addEventListener("ended",()=>{ load(i+1); start(); });
+  audio.addEventListener("timeupdate",()=>{ if(audio.duration) fill.style.width=(audio.currentTime/audio.duration*100)+"%"; });
+  bar.addEventListener("click",e=>{ if(audio.duration) audio.currentTime=e.offsetX/bar.clientWidth*audio.duration; });
+  if("mediaSession" in navigator){
+    navigator.mediaSession.setActionHandler("previoustrack",()=>{ load(i-1); start(); });
+    navigator.mediaSession.setActionHandler("nexttrack",()=>{ load(i+1); start(); });
+  }
+  show(); sync();
 })();
 
 // ---- header motto, typed out once ----
