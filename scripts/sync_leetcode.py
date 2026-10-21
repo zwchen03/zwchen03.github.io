@@ -76,7 +76,7 @@ counts = {
 
 data = {
     "user": SLUG,
-    "synced": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+    "synced": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     "solved": solved,
     "contest": {
         "rating": round(rank["rating"]),
