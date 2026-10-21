@@ -1,0 +1,46 @@
+name: Deploy site
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 */6 * * *"   # refresh LeetCode data every 6 hours
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Refresh LeetCode data
+        run: python3 scripts/sync_leetcode.py
+        continue-on-error: true   # keep the last good data if leetcode.cn is unreachable
+
+      - name: Commit refreshed data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/leetcode.js
+          git diff --cached --quiet || (git commit -m "chore: sync LeetCode data" && git push)
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

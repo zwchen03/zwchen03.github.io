@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zhiwei Chen</title>
+<meta name="description" content="Zhiwei Chen — M.Eng. student at SCUT working on pathology foundation models: distillation, debiasing and interpretability.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF9F5; --panel:#FFFFFF; --ink:#141413; --text:#3D3D3A; --muted:#87867F;
+  --line:#E3E1D8; --line-strong:#D1CEC2; --shadow:#ECEAE1;
+  --accent:#D97757; --accent-d:#C15F3C; --accent-bg:#F6E4DC;
+  --blue:#6A9BCC; --green:#788C5D; --sand:#F3F1EA;
+  --glass:rgba(255,255,255,.55); --glass-line:rgba(255,255,255,.85); --glass-shadow:rgba(20,20,19,.07);
+  --blob:.38;
+  --seq1:#F0B9A3; --seq2:#D97757; --seq3:#9C4A2E;
+  --h0:#EFEDE6; --h1:#F3CDBD; --h2:#E9A084; --h3:#D97757; --h4:#A9502F;
+  --serif:"Source Serif 4","Noto Serif SC",Georgia,serif;
+  --sans:Inter,"Noto Sans SC",system-ui,sans-serif;
+  --mono:"JetBrains Mono","Noto Sans SC",ui-monospace,monospace;
+}
+:root[data-theme="dark"]{
+  --bg:#1F1E1D; --panel:#262624; --ink:#F0EEE6; --text:#D6D4CB; --muted:#9C9A92;
+  --line:#353432; --line-strong:#454441; --shadow:#161615;
+  --accent-bg:#4A2E24; --sand:#2E2E2B;
+  --glass:rgba(38,38,36,.55); --glass-line:rgba(255,255,255,.09); --glass-shadow:rgba(0,0,0,.35);
+  --blob:.28;
+  --seq1:#F5C9B6; --seq2:#E08A6C; --seq3:#B85A3B;
+  --h0:#2E2E2B; --h1:#5A3628; --h2:#8E4A33; --h3:#C9694A; --h4:#F0A585;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1F1E1D; --panel:#262624; --ink:#F0EEE6; --text:#D6D4CB; --muted:#9C9A92;
+    --line:#353432; --line-strong:#454441; --shadow:#161615;
+    --accent-bg:#4A2E24; --sand:#2E2E2B;
+    --glass:rgba(38,38,36,.55); --glass-line:rgba(255,255,255,.09); --glass-shadow:rgba(0,0,0,.35);
+    --blob:.28;
+    --seq1:#F5C9B6; --seq2:#E08A6C; --seq3:#B85A3B;
+    --h0:#2E2E2B; --h1:#5A3628; --h2:#8E4A33; --h3:#C9694A; --h4:#F0A585;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font:14.5px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+ul{list-style:none}
+b,strong{color:var(--ink);font-weight:600}
+.wrap{max-width:1720px;margin:0 auto;padding:0 24px}
+@media(max-width:600px){.wrap{padding:0 16px}}
+
+/* header */
+header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:24px;height:54px}
+.logo{font:11px "Press Start 2P",monospace;text-decoration:none;color:var(--accent-d);flex:none}
+.motto{min-width:0;flex:0 1 auto;white-space:nowrap;overflow:hidden;font:italic 15px var(--serif);color:var(--muted)}
+.motto .caret{height:14px;vertical-align:-1px;margin-left:3px}
+@media(max-width:1000px){.motto{display:none}}
+header nav{display:flex;gap:22px;margin-left:auto;font-size:13.5px}
+header nav a{text-decoration:none;color:var(--muted)}
+header nav a:hover{color:var(--ink)}
+.tools{display:flex;gap:8px}
+.tools button{font:500 12.5px var(--mono);background:transparent;color:var(--muted);border:1px solid var(--line-strong);padding:4px 10px;cursor:pointer;min-width:52px}
+.tools button:hover{color:var(--ink);border-color:var(--ink)}
+@media(max-width:700px){header nav{display:none}.tools{margin-left:auto}}
+
+section{scroll-margin-top:70px}
+.card{background:var(--panel);border:1px solid var(--line);box-shadow:3px 3px 0 var(--shadow);padding:22px 24px;min-width:0}
+.lbl{font:500 11.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.lbl::before{content:"";width:7px;height:7px;background:var(--accent);flex:none}
+.lbl .r{margin-left:auto;text-transform:none;letter-spacing:0}
+.meta{font:12.5px var(--mono);color:var(--muted)}
+.chip{display:inline-block;font:500 11.5px var(--mono);padding:1px 7px;border:1px solid var(--line-strong);color:var(--muted);white-space:nowrap}
+.chip.hot{border-color:var(--accent);color:var(--accent-d);background:var(--accent-bg)}
+
+/* layout: profile column + research column */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.75fr);gap:24px;padding-top:24px;align-items:start}
+.side{display:flex;flex-direction:column;gap:24px;min-width:0}
+@media(max-width:1100px){.layout{grid-template-columns:minmax(0,1fr)}}
+.hero{display:grid;grid-template-columns:auto minmax(318px,1fr);grid-auto-columns:minmax(80px,150px);gap:22px;align-items:start;container-type:inline-size}
+.scene{grid-column:3;align-self:stretch;margin:-22px -24px -22px -10px;overflow:hidden;min-height:220px;
+  /* bleed to the card edges and dissolve into the card on the left and at the top */
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 55%),linear-gradient(to bottom,transparent,#000 16%);-webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to right,transparent,#000 55%),linear-gradient(to bottom,transparent,#000 16%);mask-composite:intersect;}
+.hero{--g0:#B9D2E8;--cloud2:#E3E7ED;--rain:#7FA3C6;--snow:#FFFFFF;--g1:#D3E3EF;--g2:#E9EEEE;--g3:#F8E2D3;--za:#D4DDD3;--zb:#C3D0BC;--fa:#B4C49C;--fb:#97AB7D;--na:#9DB27B;--nb:#80965F;--nc:#62764A;--glow:rgba(250,196,120,.55);--glow0:rgba(250,196,120,0);--star-o:0;--sun:#F2B56B;--star:#F0EEE6;--cloud:#FFFFFF;--f1:#E0403A;--f2:#FFFFFF;--t:#EDE3D2;--ts:#D6C7AE;--to:#8A7A66;--r:#C15F3C;--rd:#9E4A2E;--door:#6B5442;--win:#6A9BCC;--b:#6B5442;--sail:#F7F1E6;--hub:#3D3D3A}
+.scene svg{display:block;width:100%;height:100%}
+.scene .cloud{opacity:.92;animation:drift 70s steps(46) infinite}
+.scene .c2{animation-duration:48s;animation-delay:-20s}
+.scene .c3{animation-duration:58s;animation-delay:-35s}.scene .c4{animation-duration:84s;animation-delay:-5s}.scene .c5{animation-duration:64s;animation-delay:-50s}
+#wxFog{transition:opacity .4s}
+@keyframes drift{from{transform:translateX(-12px)}to{transform:translateX(34px)}}
+.hero{position:relative;isolation:isolate}
+.wash{position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(to bottom,var(--g1),var(--g2) 45%,var(--g3) 72%,var(--na));
+  -webkit-mask-image:linear-gradient(to right,transparent 30%,rgba(0,0,0,.18) 58%,rgba(0,0,0,.55) 80%,#000);
+  mask-image:linear-gradient(to right,transparent 30%,rgba(0,0,0,.18) 58%,rgba(0,0,0,.55) 80%,#000)}
+@container (max-width:540px){.scene,.wash{display:none}}
+:root[data-theme="dark"] .hero{--g0:#121827;--cloud2:#3B4152;--rain:#8197B5;--snow:#DCE3EE;--g1:#1E2639;--g2:#2C3247;--g3:#4A3D4B;--za:#333B48;--zb:#2C3440;--fa:#36432F;--fb:#2A3424;--na:#3C4A31;--nb:#2D3824;--nc:#1F271A;--glow:rgba(240,238,230,.28);--glow0:rgba(240,238,230,0);--star-o:1;--sun:#F0EEE6;--star:#F0EEE6;--cloud:#4A5064;--f1:#B8433C;--f2:#C9C6BA;--t:#8C8273;--ts:#726A5E;--to:#4E473E;--r:#8E4A33;--rd:#6E3826;--door:#3A3029;--win:#F2C36B;--b:#4E473E;--sail:#B8B0A2;--hub:#1A1A1A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero{--g0:#121827;--cloud2:#3B4152;--rain:#8197B5;--snow:#DCE3EE;--g1:#1E2639;--g2:#2C3247;--g3:#4A3D4B;--za:#333B48;--zb:#2C3440;--fa:#36432F;--fb:#2A3424;--na:#3C4A31;--nb:#2D3824;--nc:#1F271A;--glow:rgba(240,238,230,.28);--glow0:rgba(240,238,230,0);--star-o:1;--sun:#F0EEE6;--star:#F0EEE6;--cloud:#4A5064;--f1:#B8433C;--f2:#C9C6BA;--t:#8C8273;--ts:#726A5E;--to:#4E473E;--r:#8E4A33;--rd:#6E3826;--door:#3A3029;--win:#F2C36B;--b:#4E473E;--sail:#B8B0A2;--hub:#1A1A1A}}
+.avatar{display:flex;flex-direction:column;align-items:center;gap:20px;flex:none}
+.listen{display:flex;align-items:center;gap:7px;font:9px/1 "Press Start 2P",monospace;color:#C8352E;letter-spacing:.04em}
+.listen svg{width:16px;height:14px;display:block;animation:beat 1.2s steps(2) infinite}
+@keyframes beat{50%{transform:scale(1.18)}}
+.music{display:flex;flex-direction:column;align-items:center;gap:10px}
+.where{display:flex;flex-direction:column;align-items:center;gap:4px;font:11.5px var(--mono);color:var(--muted);text-align:center}
+.where .city{display:flex;align-items:center;gap:6px}
+.where svg{width:8px;height:11px;display:block}
+.where .time{color:var(--ink);font-size:13px;letter-spacing:.04em}
+.where .time i{font-style:normal;animation:blink 1s steps(2) infinite}
+.where .wx{display:flex;align-items:center;gap:6px;margin-top:8px;color:var(--ink);font-size:13px}
+.where .wx svg{width:18px;height:18px}
+.where .wx-text{font-size:11.5px;color:var(--muted)}
+.sprite{width:96px;height:96px;display:block;border:1px solid var(--line-strong);box-shadow:3px 3px 0 var(--shadow);image-rendering:pixelated;animation:bob 1.8s steps(2) infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+.hero h1{font:600 40px/1.1 var(--serif);color:var(--ink);letter-spacing:-.01em}
+.hero .role{margin:8px 0 14px}
+.hero p{font-size:15.5px;max-width:52ch;color:var(--text)}
+.status{margin-top:16px;font:12.5px var(--mono);color:var(--muted);min-height:20px}
+.status b{color:var(--accent-d);font-weight:500;margin-right:6px}
+.caret{display:inline-block;width:7px;height:13px;background:var(--accent);margin-left:2px;vertical-align:-2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.mail{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font:13px var(--mono);color:var(--text);text-decoration:none}
+.mail svg{width:15px;height:15px;color:var(--muted)}
+.mail:hover{color:var(--accent-d)}
+.mail:hover svg{color:var(--accent-d)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.btn{display:inline-flex;align-items:center;gap:7px;font:500 13px var(--sans);text-decoration:none;padding:7px 13px;border:1px solid var(--line-strong);background:var(--panel);color:var(--text)}
+.btn svg{width:15px;height:15px;flex:none}
+.btn:hover{border-color:var(--ink);color:var(--ink)}
+@media(max-width:520px){.hero{grid-template-columns:minmax(0,1fr);gap:10px}.hero h1{font-size:34px}}
+
+/* education */
+.edu li{display:grid;grid-template-columns:60px minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
+.edu li:first-child{border-top:0;padding-top:0}
+.edu li:last-child{padding-bottom:0}
+.edu img{width:60px;height:60px;object-fit:contain;background:#fff;border-radius:50%;padding:2px}
+.edu h3{font:600 17px/1.3 var(--serif);color:var(--ink)}
+.edu .deg{font-size:13.5px;color:var(--text);margin-top:2px}
+.edu .dept{font-size:12.5px;color:var(--muted)}
+.edu .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.edu .yr{font:12.5px var(--mono);color:var(--muted);align-self:start;padding-top:3px;white-space:nowrap}
+@media(max-width:520px){.edu li{grid-template-columns:48px minmax(0,1fr)}.edu img{width:48px;height:48px}.edu .yr{grid-column:2;padding:0}}
+
+/* research */
+.research{position:relative;padding:26px;border:1px solid var(--line);background:var(--bg);overflow:hidden;isolation:isolate}
+.research::before,.research::after,.research .blob{content:"";position:absolute;z-index:-1;border-radius:50%;filter:blur(70px);opacity:var(--blob)}
+.research::before{width:45%;height:120%;left:-8%;top:-25%;background:var(--accent)}
+.research::after{width:40%;height:110%;right:-6%;top:-10%;background:var(--blue)}
+.research .blob{width:34%;height:90%;left:36%;bottom:-50%;background:var(--green)}
+.research .head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.research h2{font:600 24px var(--serif);color:var(--ink)}
+.papers{display:flex;flex-direction:column;gap:18px}
+@media(max-width:620px){.research{padding:16px}}
+.glass{
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(18px) saturate(160%); backdrop-filter:blur(18px) saturate(160%);
+  border:1px solid var(--glass-line); border-radius:14px;
+  box-shadow:0 10px 30px var(--glass-shadow), inset 0 1px 0 var(--glass-line);
+  padding:12px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:20px; align-items:center; min-width:0;
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.glass:hover{transform:translateY(-3px);box-shadow:0 16px 36px var(--glass-shadow), inset 0 1px 0 var(--glass-line)}
+.fig{display:block;aspect-ratio:16/9;background:#fff;border-radius:9px;padding:6px;border:1px solid rgba(20,20,19,.07);cursor:zoom-in;overflow:hidden}
+.fig img{width:100%;height:100%;object-fit:contain;display:block}
+.info{display:flex;flex-direction:column;gap:9px;min-width:0;padding:4px 8px 4px 0}
+@media(max-width:720px){.glass{grid-template-columns:minmax(0,1fr);gap:12px}.info{padding:0 4px 4px}}
+.venue{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.venue b{font:500 11.5px var(--mono);color:#fff;background:var(--accent);padding:1px 7px;border-radius:2px}
+.venue b.b{background:var(--blue)} .venue b.g{background:var(--green)} .venue b.n{background:var(--muted)}
+.glass h3{font:600 21px/1.25 var(--serif);color:var(--ink)}
+.glass .t{font-size:13.5px;line-height:1.55;color:var(--muted)}
+.glass .hl{font:500 12.5px var(--mono);color:var(--accent-d)}
+.glass .links{display:flex;gap:6px;padding-top:4px}
+.glass .links a,.glass .links span{font:500 12px var(--mono);text-decoration:none;padding:2px 9px;border:1px solid var(--line-strong);background:var(--panel);color:var(--text);border-radius:2px}
+.glass .links a:hover{border-color:var(--ink);color:var(--ink)}
+.glass .links span{color:var(--muted);border-style:dashed;background:transparent}
+
+/* leetcode */
+.lc-top{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px}
+.lc-top > div + div{border-left:1px solid var(--line);padding-left:22px}
+@media(max-width:460px){.lc-top{grid-template-columns:minmax(0,1fr)}.lc-top > div + div{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:16px}}
+.big{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.big b{font:600 30px/1.1 var(--serif);color:var(--ink)}
+.big > span{font:12.5px var(--mono);color:var(--muted)}
+.big > .chip{align-self:center}
+.cap{font-size:12.5px;color:var(--muted);margin:3px 0 12px}
+.lc-diff li{display:grid;grid-template-columns:50px minmax(0,1fr) auto;gap:10px;align-items:center;padding:3px 0;font-size:12.5px}
+.lc-diff li > span:first-child{color:var(--muted)}
+.lc-diff .bar{height:6px;background:var(--sand);border-radius:3px;overflow:hidden}
+.lc-diff .bar i{display:block;height:100%;border-radius:3px}
+.lc-diff li > span:last-child{font:12px var(--mono);color:var(--ink)}
+.lc-diff li > span:last-child em{font-style:normal;color:var(--muted)}
+.spark{position:relative}
+.spark svg{width:100%;height:56px;display:block;overflow:visible}
+.spark-ends{display:flex;justify-content:space-between;margin-top:6px;font:11.5px var(--mono);color:var(--muted)}
+.tip{position:absolute;z-index:5;pointer-events:none;background:var(--panel);border:1px solid var(--line-strong);box-shadow:2px 2px 0 var(--shadow);padding:4px 8px;font:12px var(--mono);color:var(--text);white-space:nowrap;transform:translate(-50%,-115%);opacity:0;transition:opacity .1s}
+.tip b{color:var(--ink);font-weight:500}
+
+.heat{position:relative;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.heat-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px;font-size:13px;color:var(--muted)}
+.heat-head b{font:600 20px var(--serif);color:var(--ink);margin:0 3px}
+#hmsvg{display:block;width:100%;height:auto}
+#hmsvg text{font:10px var(--mono);fill:var(--muted)}
+#hmsvg rect:hover{stroke:var(--ink);stroke-width:1}
+.l0{fill:var(--h0);background:var(--h0)} .l1{fill:var(--h1);background:var(--h1)} .l2{fill:var(--h2);background:var(--h2)}
+.l3{fill:var(--h3);background:var(--h3)} .l4{fill:var(--h4);background:var(--h4)}
+
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.repo{display:flex;justify-content:space-between;gap:10px;text-decoration:none;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.repo:hover b{color:var(--accent-d)}
+.repo b{font:500 13.5px var(--mono)}
+
+footer{padding:30px 0 26px;text-align:center;font:12px var(--mono);color:var(--muted)}
+
+#lb{position:fixed;inset:0;z-index:50;background:rgba(20,20,19,.72);display:none;align-items:center;justify-content:center;padding:24px;cursor:zoom-out}
+#lb.on{display:flex}
+#lb img{max-width:min(1400px,100%);max-height:100%;background:#fff;padding:12px;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+
+::selection{background:var(--accent);color:#fff}
+@media (prefers-reduced-motion: reduce){.listen svg,.sprite,.caret,.where .time i,.scene .cloud{animation:none}.glass{transition:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="logo" href="#">ZW.CHEN</a>
+    <div class="motto" aria-label="May everything you work for have a romantic outcome in the future."><span id="motto" aria-hidden="true"></span><i class="caret"></i></div>
+    <nav>
+      <a href="#research" data-i18n="navResearch">Research</a>
+      <a href="#education" data-i18n="navEducation">Education</a>
+      <a href="#coding" data-i18n="navProgramming">Programming</a>
+      <a href="mailto:zwchen2003@gmail.com" data-i18n="navContact">Contact</a>
+    </nav>
+    <div class="tools">
+      <button id="lang" aria-label="Switch language">中文</button>
+      <button id="theme" aria-label="Toggle theme" data-i18n="theme">◐ Theme</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="layout">
+    <aside class="side">
+    <section class="card hero">
+      <div class="avatar">
+        <img class="sprite" src="assets/avatar-pixel.png" alt="Pixel-art avatar" width="96" height="96">
+        <div class="music">
+          <div class="listen">
+            <svg viewBox="0 0 7 6" shape-rendering="crispEdges" aria-hidden="true">
+              <path fill="#E0403A" d="M1 0h2v1h1V0h2v1h1v2H6v1H5v1H4v1H3V5H2V4H1V3H0V1h1z"/>
+              <path fill="#F59A93" d="M1 1h1v1H1z"/>
+            </svg>
+            <span>Listen</span>
+          </div>
+        </div>
+        <div class="where">
+          <span class="city">
+            <svg viewBox="0 0 5 7" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M1 0h3v1h1v3H4v1H3v2H2V5H1V4H0V1h1zm1 2v1h1V2z"/></svg>
+            <span data-i18n="city">Guangzhou</span>
+          </span>
+          <span class="time" id="clock">--:--</span>
+          <span class="wx" id="wx" hidden><svg id="wxIcon" viewBox="0 0 9 9" shape-rendering="crispEdges" aria-hidden="true"></svg><span id="wxTemp"></span></span>
+          <span class="wx-text" id="wxText" hidden></span>
+        </div>
+      </div>
+      <div>
+        <h1 data-i18n="name">Zhiwei Chen</h1>
+        <div class="role meta" data-i18n="role">M.Eng. Student · South China University of Technology</div>
+        <p data-i18n="bio">A computer science graduate student who loves life and technology.<br>My research focuses on <b>computational pathology</b>.</p>
+        <a class="mail" href="mailto:zwchen2003@gmail.com">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3.5 6 8.5 7 8.5-7"/></svg>zwchen2003@gmail.com
+        </a>
+        <div class="btns">
+          <a class="btn" href="https://scholar.google.com/citations?user=e1ZddXkAAAAJ" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M5.242 13.769L0 9.5 12 0l12 9.5-5.242 4.269C17.548 11.249 14.978 9.5 12 9.5c-2.977 0-5.548 1.748-6.758 4.269zM12 10a7 7 0 1 0 0 14 7 7 0 0 0 0-14z"/></svg>Scholar
+          </a>
+          <a class="btn" href="https://github.com/zwchen03" target="_blank" rel="noopener">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>GitHub
+          </a>
+          <a class="btn" href="https://leetcode.cn/u/chun-qiu-kai-luo/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFA116" d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0z"/><path fill="#B3B1B0" d="M10.617 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z"/></svg>LeetCode
+          </a>
+        </div>
+        <div class="status"><b>&gt;</b><span id="doing"></span><i class="caret"></i></div>
+      </div>
+      <div class="wash" aria-hidden="true"></div>
+      <div class="scene"><svg id="scene" viewBox="0 0 32 72" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" aria-hidden="true"></svg></div>
+    </section>
+
+    <section class="card" id="education">
+      <div class="lbl" data-i18n="edu">Education</div>
+      <ul class="edu">
+        <li>
+          <img src="assets/logo-scut.png" alt="South China University of Technology logo">
+          <div>
+            <h3 data-i18n="scutName">South China University of Technology</h3>
+            <div class="deg" data-i18n="scutDeg">M.Eng. in Computer Technology</div>
+            <div class="dept" data-i18n="scutDept">School of Computer Science and Engineering</div>
+            <div class="chips"><span class="chip hot" data-i18n="chipByd">BYD Scholarship</span></div>
+          </div>
+          <span class="yr">2025 – 2028</span>
+        </li>
+        <li>
+          <img src="assets/logo-gdut.svg" alt="Guangdong University of Technology logo">
+          <div>
+            <h3 data-i18n="gdutName">Guangdong University of Technology</h3>
+            <div class="deg" data-i18n="gdutDeg">B.Eng. in Computer Science and Technology</div>
+            <div class="dept" data-i18n="gdutDept">School of Computer Science · Fuxi Honors Class</div>
+            <div class="chips"><span class="chip hot" data-i18n="chipRank">GPA Rank 4 / 771</span><span class="chip hot" data-i18n="chipGrad">Outstanding Graduate</span><span class="chip" data-i18n="chipSch">Merit Student Scholarship</span><span class="chip" data-i18n="chipStar">Academic Excellence Award</span><span class="chip" data-i18n="chipMd">Mingdong Scholarship</span><span class="chip" data-i18n="chipThesis">Outstanding Thesis (Innovation)</span></div>
+          </div>
+          <span class="yr">2021 – 2025</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="card" id="coding">
+      <div class="lbl"><span data-i18n="codingLbl">LeetCode</span><span class="r meta" id="lcSync"></span></div>
+      <div id="lcBody">
+        <div class="lc-top">
+          <div>
+            <div class="big"><b id="lcAc"></b><span id="lcAll"></span></div>
+            <div class="cap" data-i18n="solvedCap">problems solved</div>
+            <ul class="lc-diff" id="lcDiff"></ul>
+          </div>
+          <div>
+            <div class="big"><b id="lcRating"></b><span class="chip hot" id="lcTop"></span></div>
+            <div class="cap" id="lcRatingCap"></div>
+            <div class="spark" id="spark">
+              <svg id="sparksvg" viewBox="0 0 320 56" preserveAspectRatio="none" role="img"></svg>
+              <div class="spark-ends" id="sparkEnds"></div>
+              <div class="tip" id="tip"></div>
+            </div>
+          </div>
+        </div>
+        <div class="heat" id="heat">
+          <div class="heat-head"><span id="hmTotal"></span><span id="hmMeta"></span></div>
+          <svg id="hmsvg" role="img"></svg>
+          <div class="tip" id="hmtip"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="lbl" data-i18n="skills">Technical Skills</div>
+      <div class="tags">
+        <span class="chip hot">Python</span><span class="chip">C/C++</span><span class="chip">JavaScript</span>
+        <span class="chip hot">PyTorch</span><span class="chip hot" data-i18n="skDL">Deep Learning</span><span class="chip" data-i18n="skAgent">Agent</span>
+        <span class="chip" data-i18n="skLLM">Large Language Models</span><span class="chip" data-i18n="skGNN">Graph Neural Networks</span><span class="chip" data-i18n="skWeb">Web Frontend</span>
+        <span class="chip">Linux</span><span class="chip">Git</span><span class="chip">Docker</span>
+      </div>
+      <a class="repo" href="https://github.com/zwchen03/advDistall" target="_blank" rel="noopener"><b>advDistall</b><span class="meta">Python · ★ 2</span></a>
+    </section>
+    </aside>
+
+  <section class="research" id="research">
+    <span class="blob"></span>
+    <div class="head">
+      <h2 data-i18n="researchTitle">Selected Research</h2>
+      <span class="meta" data-i18n="researchHint">Click a figure to enlarge</span>
+    </div>
+    <div class="papers">
+
+      <article class="glass">
+        <a class="fig" href="assets/fig-smartstu.jpg" data-lb><img src="assets/fig-smartstu.jpg" alt="SmartStu framework" loading="lazy"></a>
+        <div class="info">
+          <div class="venue"><b>MICCAI 2026</b><span class="meta" data-i18n="p1Meta">Early Accept · First author</span></div>
+          <h3>SmartStu</h3>
+          <div class="t">Harnessing Adversarial Distillation to Customise Debiased, Disease-Specific Pathology Foundation Models for Breast Cancer</div>
+          <div class="hl" data-i18n="p1Hl">30× compression; surpasses the teacher (AUC 0.994)</div>
+          <div class="links"><a href="https://arxiv.org/abs/2608.01356" target="_blank" rel="noopener">arXiv</a><a href="https://github.com/zwchen03/advDistall" target="_blank" rel="noopener">Code</a></div>
+        </div>
+      </article>
+
+
+      <article class="glass">
+        <a class="fig" href="assets/fig-ginterp.jpg" data-lb><img src="assets/fig-ginterp.jpg" alt="G-Interp framework" loading="lazy"></a>
+        <div class="info">
+          <div class="venue"><b class="g">MICCAI 2026 WS</b><span class="meta" data-i18n="p3Meta">Oral · Second author</span></div>
+          <h3>G-Interp</h3>
+          <div class="t">Cellular-Communication-Level Interpretability for Pathology Foundation Models via Graph Distillation on Microenvironment</div>
+          <div class="hl" data-i18n="p3Hl">Cell-level interpretability with 20× compression</div>
+          <div class="links"><a href="https://arxiv.org/abs/2609.26073" target="_blank" rel="noopener">arXiv</a></div>
+        </div>
+      </article>
+
+      <article class="glass">
+        <a class="fig" href="assets/fig-cnrl.jpg" data-lb><img src="assets/fig-cnrl.jpg" alt="CNRL framework" loading="lazy"></a>
+        <div class="info">
+          <div class="venue"><b class="n">IJCNN 2025</b><span class="meta" data-i18n="p4Meta">Third author</span></div>
+          <h3>CNRL</h3>
+          <div class="t">Cross-Network Relationship Learning via Optimal Transport for Link Prediction</div>
+          <div class="hl" data-i18n="p4Hl">Optimal transport for cross-domain link prediction</div>
+          <div class="links"><a href="https://ieeexplore.ieee.org/abstract/document/11227850/" target="_blank" rel="noopener">IEEE</a></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+  </div>
+
+</main>
+
+<footer data-i18n="footer">© 2026 Zhiwei Chen · Contact: zwchen2003@gmail.com</footer>
+
+<div id="lb" aria-hidden="true"><img alt=""></div>
+
+<!-- Generated by scripts/sync_leetcode.py (refreshed by the GitHub Action) -->
+<script src="data/leetcode.js"></script>
+<script>
+// ---- translations ----
+const I18N = {
+  en: {
+    title:"Zhiwei Chen",
+    navResearch:"Research", navEducation:"Education", navProgramming:"Programming", navContact:"Contact",
+    theme:"◐ Theme", name:"Zhiwei Chen",
+    role:"M.Eng. Student · South China University of Technology",
+    bio:"A computer science graduate student who loves life and technology.<br>My research focuses on <b>computational pathology</b>.",
+    edu:"Education",
+    scutName:"South China University of Technology", scutDeg:"M.Eng. in Computer Technology", scutDept:"School of Computer Science and Engineering",
+    gdutName:"Guangdong University of Technology", gdutDeg:"B.Eng. in Computer Science and Technology", gdutDept:"School of Computer Science · Fuxi Honors Class",
+    chipRank:"GPA Rank 4 / 771", chipGrad:"Outstanding Graduate", chipByd:"BYD Scholarship",
+    chipSch:"Merit Student Scholarship", chipStar:"Academic Excellence Award",
+    chipMd:"Mingdong Scholarship", chipThesis:"Outstanding Thesis (Innovation)",
+    researchTitle:"Selected Research", researchHint:"Click a figure to enlarge",
+    p1Meta:"Early Accept · First author", p1Hl:"30× compression; surpasses the teacher (AUC 0.994)",
+    p2Meta:"In preparation · First author", p2Hl:"+4.3 average gain across five MIL backbones",
+    p3Meta:"Oral · Second author", p3Hl:"Cell-level interpretability with 20× compression",
+    p4Meta:"Third author", p4Hl:"Optimal transport for cross-domain link prediction",
+    soon:"Coming soon",
+    city:"Guangzhou", codingLbl:"LeetCode", solvedCap:"problems solved",
+    skills:"Technical Skills", skDL:"Deep Learning", skAgent:"Agent", skLLM:"Large Language Models", skGNN:"Graph Neural Networks", skWeb:"Web Frontend",
+    footer:"© 2026 Zhiwei Chen · Contact: zwchen2003@gmail.com",
+    // generated text
+    ratingCap:n=>`contest rating · ${n} contests`, top:p=>`Top ${p}%`,
+    diff:["Easy","Medium","Hard"],
+    hmTotal:n=>`<b>${n}</b> submissions in the past year`,
+    hmMeta:(a,s)=>`${a} active days · ${s}-day streak`,
+    hmTip:(n,d)=>n?`<b>${n}</b> submission${n>1?"s":""} on ${d}`:`No submissions on ${d}`,
+    synced:d=>`Synced ${d}`, sparkTip:(r,k)=>`rating <b>${r}</b> · rank <b>${k}</b>`,
+    locale:"en-US", unavailable:"LeetCode data is unavailable."
+  },
+  zh: {
+    title:"陈志伟",
+    navResearch:"研究", navEducation:"教育", navProgramming:"编程", navContact:"联系",
+    theme:"◐ 主题", name:"陈志伟",
+    role:"华南理工大学 · 硕士研究生",
+    bio:"计算机专业研究生，热爱生活，热爱技术。<br>研究方向为<b>计算病理学</b>。",
+    edu:"教育经历",
+    scutName:"华南理工大学", scutDeg:"计算机技术 · 硕士研究生（推免）", scutDept:"计算机科学与工程学院",
+    gdutName:"广东工业大学", gdutDeg:"计算机科学与技术 · 本科", gdutDept:"计算机学院 · 伏羲班",
+    chipRank:"GPA Rank 4 / 771", chipGrad:"校级优秀毕业生", chipByd:"比亚迪奖学金",
+    chipSch:"校级优秀学生奖学金", chipStar:"学习标兵奖学金", chipMd:"明动优秀学生奖学金", chipThesis:"优秀毕业设计（创新奖）",
+    researchTitle:"代表性研究", researchHint:"点击框架图可放大",
+    p1Meta:"Early Accept · 第一作者", p1Hl:"模型压缩 30 倍以上，性能超越教师模型（AUC 0.994）",
+    p2Meta:"准备中 · 第一作者", p2Hl:"5 种 MIL 骨干网络平均提升 4.3",
+    p3Meta:"口头报告 · 第二作者", p3Hl:"细胞级可解释性，参数压缩 20 倍以上",
+    p4Meta:"第三作者", p4Hl:"基于最优传输的跨域链路预测",
+    soon:"即将公开",
+    city:"广州", codingLbl:"力扣", solvedCap:"已解决题目",
+    skills:"技术栈", skDL:"深度学习", skAgent:"Agent", skLLM:"大语言模型", skGNN:"图神经网络", skWeb:"Web 前端",
+    footer:"© 2026 陈志伟 · 联系邮箱:zwchen2003@gmail.com",
+    ratingCap:n=>`竞赛分 · 共 ${n} 场`, top:p=>`前 ${p}%`,
+    diff:["简单","中等","困难"],
+    hmTotal:n=>`过去一年提交<b>${n}</b>次`,
+    hmMeta:(a,s)=>`活跃 ${a} 天 · 连续 ${s} 天`,
+    hmTip:(n,d)=>n?`${d} · 提交 <b>${n}</b> 次`:`${d} · 无提交`,
+    synced:d=>`同步于 ${d}`, sparkTip:(r,k)=>`分数 <b>${r}</b> · 排名 <b>${k}</b>`,
+    locale:"zh-CN", unavailable:"暂无力扣数据。"
+  }
+};
+const root = document.documentElement;
+let lang = "en";
+try{ if(localStorage.getItem("lang")==="zh") lang="zh"; }catch(e){}
+const qLang = new URLSearchParams(location.search).get("lang");
+if(qLang==="zh" || qLang==="en") lang=qLang;
+const T = k => I18N[lang][k];
+const num = n => n.toLocaleString(T("locale"));
+const fmtDay = (d,opt) => d.toLocaleDateString(T("locale"),{timeZone:"UTC",...opt});
+
+// ---- LeetCode card (data from data/leetcode.js) ----
+const LC = window.LEETCODE;
+const history = LC ? LC.contest.history : [];
+
+// rating sparkline: geometry and hover are language-independent, labels are re-rendered
+const spark = (function(){
+  const svg=document.getElementById("sparksvg"), tip=document.getElementById("tip"), box=document.getElementById("spark");
+  if(!history.length) return null;
+  const W=320,H=56,pad=5;
+  const rs=history.map(h=>h.rating), lo=Math.floor((Math.min(...rs)-40)/50)*50, hi=Math.ceil((Math.max(...rs)+30)/50)*50;
+  const xs=history.map((_,i)=>pad+i*(W-2*pad)/Math.max(history.length-1,1));
+  const ys=history.map(h=>H-pad-(h.rating-lo)/(hi-lo)*(H-2*pad));
+  svg.innerHTML =
+    `<line x1="0" x2="${W}" y1="${H-pad}" y2="${H-pad}" stroke="var(--line)" stroke-width="1" vector-effect="non-scaling-stroke"/>`+
+    `<polyline points="${xs.map((x,i)=>`${x},${ys[i]}`).join(" ")}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>`;
+  const dot=document.createElement("div");
+  dot.style.cssText="position:absolute;width:9px;height:9px;background:var(--accent);border:2px solid var(--panel);transform:translate(-50%,-50%);pointer-events:none";
+  box.appendChild(dot);
+  const place=i=>{
+    const r=svg.getBoundingClientRect(), b=box.getBoundingClientRect();
+    const x=r.left-b.left+xs[i]/W*r.width, y=r.top-b.top+ys[i]/H*r.height;
+    dot.style.left=x+"px"; dot.style.top=y+"px";
+    return [x,y,b.width];
+  };
+  const last=history.length-1; place(last);
+  svg.addEventListener("mousemove",e=>{
+    const r=svg.getBoundingClientRect(), fx=(e.clientX-r.left)/r.width*W;
+    let i=0; xs.forEach((x,k)=>{ if(Math.abs(x-fx)<Math.abs(xs[i]-fx)) i=k; });
+    const [x,y,bw]=place(i), h=history[i];
+    const name = lang==="zh" ? h.nameZh : h.name;
+    tip.innerHTML=`${name} · ${fmtDay(new Date(h.time*1000),{year:"numeric",month:"short",day:"numeric"})}<br>${T("sparkTip")(Math.round(h.rating),num(h.ranking))}`;
+    tip.style.left=Math.min(Math.max(x,90),bw-90)+"px"; tip.style.top=(y-6)+"px"; tip.style.opacity=1;
+  });
+  svg.addEventListener("mouseleave",()=>{ tip.style.opacity=0; place(last); });
+  addEventListener("resize",()=>place(last));
+  return {labels(){
+    const f=history[0], l=history[last], m=t=>fmtDay(new Date(t*1000),{year:"numeric",month:"short"});
+    document.getElementById("sparkEnds").innerHTML=`<span>${m(f.time)}</span><span>${m(l.time)}</span>`;
+    svg.setAttribute("aria-label",`${Math.round(f.rating)} → ${Math.round(l.rating)}`);
+  }};
+})();
+
+// submission heatmap: past 52 weeks ending today (UTC dates, as LeetCode keys them),
+// drawn at the card's real pixel width so labels stay crisp. A snake crawls over the
+// grid eating the active days, then the grid refills and it starts again.
+const heat = (function(){
+  const svg=document.getElementById("hmsvg"), tip=document.getElementById("hmtip"), box=document.getElementById("heat");
+  if(!LC) return null;
+  const counts=LC.calendar.counts, DAY=864e5;
+  const now=new Date(), end=Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate());
+  const first=end-364*DAY, start=first-new Date(first).getUTCDay()*DAY;  // back to Sunday
+  const days=[]; for(let t=start;t<=end;t+=DAY){ const d=new Date(t), k=d.toISOString().slice(0,10); days.push({d,k,n:t>=first?(counts[k]||0):null}); }
+  const inWin=days.filter(x=>x.n!==null), total=inWin.reduce((s,x)=>s+x.n,0), active=inWin.filter(x=>x.n>0).length;
+  const lvl=n=>n===0?0:n===1?1:n<=3?2:n<=6?3:4;
+  const cols=Math.ceil(days.length/7), TOP=16;
+  let S=10, C=8;  // cell pitch and size, set by draw()
+
+  // ---- snake state (grid coordinates: col, row = day of week) ----
+  const eaten=new Set(), SNAKE_LEN=5;
+  let body=[], targets=[], pause=0;
+  const reset=()=>{
+    eaten.clear();
+    svg.querySelectorAll("rect[data-i]").forEach(r=>r.setAttribute("class",`l${lvl(days[r.dataset.i].n)}`));
+    body=Array.from({length:SNAKE_LEN},(_,k)=>[-1-k,3]);
+    targets=days.map((x,i)=>x.n>0?i:-1).filter(i=>i>=0);
+  };
+  const drawSnake=()=>{
+    const g=svg.querySelector("#snake"); if(!g) return;
+    g.innerHTML=body.map(([c,r],k)=>
+      `<rect x="${(c*S).toFixed(1)}" y="${(TOP+r*S).toFixed(1)}" width="${C.toFixed(1)}" height="${C.toFixed(1)}" rx="2" style="fill:var(--ink);opacity:${(.9-k*.13).toFixed(2)}"/>`).join("");
+  };
+  const step=()=>{
+    if(pause>0){ pause--; if(pause===0) reset(); drawSnake(); return; }
+    const [hc,hr]=body[0];
+    let goal;
+    if(targets.length){
+      // head for the nearest uneaten active day
+      let best=0, bd=1e9;
+      targets.forEach((i,k)=>{ const d=Math.abs(Math.floor(i/7)-hc)+Math.abs(i%7-hr); if(d<bd){ bd=d; best=k; } });
+      const i=targets[best]; goal=[Math.floor(i/7),i%7];
+    } else goal=[cols+SNAKE_LEN,hr];  // all eaten: crawl off the right edge
+    const nc=hc+Math.sign(goal[0]-hc), nr=nc!==hc?hr:hr+Math.sign(goal[1]-hr);
+    body.unshift([nc,nr]); body.pop();
+    const i=nc*7+nr, k=nc>=0&&nc<cols?targets.indexOf(i):-1;
+    if(k>=0){ targets.splice(k,1); eaten.add(i); const r=svg.querySelector(`rect[data-i="${i}"]`); if(r) r.setAttribute("class","l0"); }
+    if(!targets.length && nc>=cols+SNAKE_LEN-1) pause=20;  // ~2s break, then the grid refills
+    drawSnake();
+  };
+
+  svg.addEventListener("mouseover",e=>{
+    const i=e.target.dataset && e.target.dataset.i; if(i===undefined) return;
+    const x=days[i], r=e.target.getBoundingClientRect(), b=box.getBoundingClientRect();
+    tip.innerHTML=T("hmTip")(x.n,fmtDay(x.d,{year:"numeric",month:"short",day:"numeric"}));
+    tip.style.left=Math.min(Math.max(r.left-b.left+r.width/2,90),b.width-90)+"px";
+    tip.style.top=(r.top-b.top-4)+"px"; tip.style.opacity=1;
+  });
+  svg.addEventListener("mouseleave",()=>tip.style.opacity=0);
+  function draw(){
+    const W=box.clientWidth||480, f=v=>v.toFixed(1);
+    S=W/cols; C=Math.max(S-2.5,3);
+    svg.setAttribute("viewBox",`0 0 ${f(W)} ${f(TOP+7*S)}`);
+    const starts=[]; let prev=-1;
+    for(let c=0;c<cols;c++){ const m=days[c*7].d.getUTCMonth(); if(m!==prev) starts.push(c); prev=m; }
+    if(starts.length>1 && starts[1]-starts[0]<3) starts.shift();  // partial first month would collide
+    const months=starts.filter(c=>c<cols-2).map(c=>`<text x="${f(c*S)}" y="10">${fmtDay(days[c*7].d,{month:"short"})}</text>`).join("");
+    const cells=days.map((x,i)=>x.n===null?"":
+      `<rect class="l${eaten.has(i)?0:lvl(x.n)}" x="${f(Math.floor(i/7)*S)}" y="${f(TOP+x.d.getUTCDay()*S)}" width="${f(C)}" height="${f(C)}" rx="2" data-i="${i}"/>`).join("");
+    svg.innerHTML=months+cells+`<g id="snake" style="pointer-events:none"></g>`;
+    svg.setAttribute("aria-label",T("hmTotal")(total).replace(/<[^>]+>/g,""));
+    document.getElementById("hmTotal").innerHTML=T("hmTotal")(total);
+    document.getElementById("hmMeta").textContent=T("hmMeta")(active,LC.calendar.recentStreak);
+    drawSnake();
+  }
+  let raf=0; addEventListener("resize",()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(draw); });
+  if(!matchMedia("(prefers-reduced-motion: reduce)").matches){
+    requestAnimationFrame(()=>{ reset(); setInterval(()=>{ if(!document.hidden) step(); },90); });
+  }
+  return {labels:draw};
+})();
+
+function renderLeetCode(){
+  if(!LC){ document.getElementById("lcBody").innerHTML=`<p class="meta">${T("unavailable")}</p>`; return; }
+  const c=LC.contest, solved=LC.solved, ac=solved.reduce((s,x)=>s+x.solved,0), all=solved.reduce((s,x)=>s+x.total,0);
+  document.getElementById("lcSync").textContent=T("synced")(fmtDay(new Date(LC.synced+"T00:00:00Z"),{year:"numeric",month:"short",day:"numeric"}));
+  document.getElementById("lcAc").textContent=num(ac);
+  document.getElementById("lcAll").textContent=`/ ${num(all)}`;
+  const names=T("diff");
+  document.getElementById("lcDiff").innerHTML=solved.map((x,i)=>
+    `<li><span>${names[i]}</span><span class="bar"><i style="width:${(x.solved/x.total*100).toFixed(1)}%;background:var(--seq${i+1})"></i></span><span>${x.solved}<em> / ${num(x.total)}</em></span></li>`).join("");
+  document.getElementById("lcRating").textContent=num(c.rating);
+  document.getElementById("lcTop").textContent=T("top")(c.topPercentage);
+  document.getElementById("lcRatingCap").textContent=T("ratingCap")(c.attended);
+  if(spark) spark.labels();
+  if(heat) heat.labels();
+}
+
+// ---- language ----
+function applyLang(){
+  root.lang = lang==="zh" ? "zh-CN" : "en";
+  document.title = T("title");
+  document.querySelectorAll("[data-i18n]").forEach(el=>{ el.innerHTML=T(el.dataset.i18n); });
+  document.getElementById("lang").textContent = lang==="zh" ? "EN" : "中文";
+  renderLeetCode();
+}
+document.getElementById("lang").onclick=()=>{
+  lang = lang==="zh" ? "en" : "zh";
+  try{ localStorage.setItem("lang",lang); }catch(e){}
+  applyLang();
+};
+applyLang();
+
+// ---- pixel landscape with a turning windmill (day in light mode, night in dark mode) ----
+// Sky and hills use smooth gradients; silhouettes, windmill, clouds and sun stay pixel-stepped.
+(function(){
+  const svg=document.getElementById("scene"); if(!svg) return;
+  const W=32, H=72, CX=16, CY=37;  // canvas size in pixels; windmill hub
+  const px=Array.from({length:H},()=>new Array(W).fill(null));
+  const set=(x,y,c)=>{ if(x>=0&&x<W&&y>=0&&y<H) px[y][x]=c; };
+  const fill=(x0,y0,w,h,c)=>{ for(let y=y0;y<y0+h;y++) for(let x=x0;x<x0+w;x++) set(x,y,c); };
+  const rects=cells=>cells.map(([x,y,w,c])=>`<rect x="${x}" y="${y}" width="${w}" height="1" style="fill:var(--${c})"/>`).join("");
+  const rows=grid=>{  // merge horizontal runs of the same colour into one rect
+    const out=[];
+    grid.forEach((row,y)=>{ let x=0; while(x<W){ const c=row[x]; let w=1; while(x+w<W&&row[x+w]===c) w++; if(c) out.push([x,y,w,c]); x+=w; } });
+    return out;
+  };
+  const ridge=top=>{  // stepped silhouette from per-column heights
+    let d=`M0 ${H}`; top.forEach((t,x)=>{ d+=` V${t} H${x+1}`; }); return d+` V${H} Z`;
+  };
+  const stops=(...vars)=>vars.map(([o,v])=>`<stop offset="${o}" style="stop-color:var(--${v})"/>`).join("");
+
+  const haze=[], far=[], near=[];
+  for(let x=0;x<W;x++){
+    haze.push(45+Math.round(2*Math.sin(x/6+2)+Math.sin(x/2.7)));
+    far.push(50+Math.round(2.5*Math.sin(x/4.2)+1.5*Math.sin(x/1.9+1)));
+    near.push(58+Math.round(1.6*Math.sin((x-CX)/5.5-1.4)+Math.abs(x-CX)/6));
+  }
+
+  // sun (moon at night), windmill, flowers
+  const sun=[]; for(let y=-3;y<=3;y++) for(let x=-3;x<=3;x++) if(x*x+y*y<=10) sun.push([25+x,11+y,1,"sun"]);
+  [[4,64,"f1"],[9,67,"f2"],[23,65,"f1"],[27,68,"f2"],[13,69,"f1"],[20,70,"f2"],[2,69,"f2"]].forEach(([x,y,c])=>set(x,y,c));
+  for(let y=38;y<=59;y++){
+    const g=Math.floor((y-38)/6), l=CX-3-g, r=CX+2+g;
+    for(let x=l;x<=r;x++) set(x,y,x===l||x===r?"to":(x>=r-1?"ts":"t"));
+  }
+  [[CX-1,31,2],[CX-2,32,4],[CX-3,33,6],[CX-4,34,8],[CX-4,35,8]].forEach(([x,y,w])=>fill(x,y,w,1,"r"));
+  fill(CX-4,36,8,1,"rd"); fill(CX-4,37,8,1,"to");
+  fill(CX-1,55,2,4,"door"); fill(CX-1,46,2,2,"win"); fill(CX-1,41,2,2,"win");
+
+  const stars=[[3,4],[9,10],[13,3],[20,7],[29,21],[5,18],[28,2],[17,15]].map(([x,y])=>[x,y,1,"star"]);
+  const cloud=(shape,x0,y0,c="cloud")=>shape.flatMap((row,y)=>[...row].map((ch,x)=>ch==="X"?[x0+x,y0+y,1,c]:null).filter(Boolean));
+  const big=["...XXX....","..XXXXXX..",".XXXXXXXXX","XXXXXXXXXX"], small=["..XX...",".XXXXX.","XXXXXXX"];
+
+  // blades: 4 sails, re-drawn every frame from the current angle
+  const blades=a=>{
+    const cells=new Map();
+    for(let k=0;k<4;k++){
+      const t=a+k*Math.PI/2, c=Math.cos(t), s=Math.sin(t);
+      for(let r=1;r<=13;r++){
+        const x=Math.round(CX-.5+r*c), y=Math.round(CY+r*s);
+        cells.set(`${x},${y}`,"b");
+        if(r>=4){ const sx=Math.round(CX-.5+r*c-s*1.6), sy=Math.round(CY+r*s+c*1.6); if(!cells.has(`${sx},${sy}`)) cells.set(`${sx},${sy}`,"sail"); }
+      }
+    }
+    cells.set(`${CX-1},${CY}`,"hub"); cells.set(`${CX},${CY}`,"hub");
+    return rects([...cells].map(([k,c])=>{ const [x,y]=k.split(",").map(Number); return [x,y,1,c]; }));
+  };
+
+  svg.innerHTML =
+    `<defs>
+      <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">${stops([0,"g0"],[.4,"g1"],[.62,"g2"],[.8,"g3"])}</linearGradient>
+      <linearGradient id="hazeG" x1="0" y1="0" x2="0" y2="1">${stops([0,"za"],[1,"zb"])}</linearGradient>
+      <linearGradient id="farG" x1="0" y1="0" x2="0" y2="1">${stops([0,"fa"],[1,"fb"])}</linearGradient>
+      <linearGradient id="nearG" x1="0" y1="0" x2="0" y2="1">${stops([0,"na"],[.45,"nb"],[1,"nc"])}</linearGradient>
+      <radialGradient id="glowG">${stops([0,"glow"],[1,"glow0"])}</radialGradient>
+    </defs>
+    <rect width="${W}" height="${H}" fill="url(#skyG)"/>
+    <g style="opacity:var(--star-o)">${rects(stars)}</g>
+    <g id="sunG"><circle cx="25" cy="11" r="10" fill="url(#glowG)"/>${rects(sun)}</g>
+    <g class="cloud c1">${rects(cloud(big,0,7))}</g><g class="cloud c2">${rects(cloud(small,0,24))}</g><g id="wxClouds"></g>
+    <path d="${ridge(haze)}" fill="url(#hazeG)"/>
+    <path d="${ridge(far)}" fill="url(#farG)"/>
+    <path d="${ridge(near)}" fill="url(#nearG)"/>` +
+    rects(rows(px)) + `<g id="blades"></g><g id="wxFx"></g><rect id="wxFog" width="${W}" height="${H}" style="fill:var(--g2);opacity:0"/>`;
+  const g=document.getElementById("blades"), fx=document.getElementById("wxFx"), fog=document.getElementById("wxFog");
+  const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let a=0, kind="clear", parts=[], tick=0;
+  const drawFx=()=>{ const snow=kind==="snow"; fx.innerHTML=parts.map(q=>`<rect x="${q.x}" y="${q.y}" width="1" height="${snow?1:2}" style="fill:var(--${snow?"snow":"rain"})"/>`).join(""); };
+  // called by the weather widget: clear | partly | cloudy | fog | rain | snow | storm
+  window.sceneWeather=k=>{
+    kind=k;
+    const overcast=k!=="clear"&&k!=="partly";
+    document.getElementById("sunG").style.opacity=overcast?.2:1;
+    document.getElementById("wxClouds").innerHTML=k==="clear"?"":
+      `<g class="cloud c3">${rects(cloud(big,0,15,"cloud2"))}</g>`+
+      (overcast?`<g class="cloud c4">${rects(cloud(small,0,3,"cloud2"))}</g><g class="cloud c5">${rects(cloud(big,0,30,"cloud2"))}</g>`:"");
+    fog.style.opacity=k==="fog"?.45:0;
+    const n=k==="rain"||k==="storm"?26:k==="snow"?18:0;
+    parts=Array.from({length:n},()=>({x:Math.floor(Math.random()*W),y:Math.floor(Math.random()*H)}));
+    drawFx();
+  };
+  g.innerHTML=blades(a);
+  if(still) return;
+  setInterval(()=>{
+    a+=Math.PI/24; g.innerHTML=blades(a);
+    if(parts.length){
+      parts.forEach(q=>{
+        q.y+=kind==="snow"?tick%2:3;
+        if(kind==="snow"&&Math.random()<.15) q.x+=Math.random()<.5?-1:1;
+        if(q.y>H){ q.y=-2; q.x=Math.floor(Math.random()*W); }
+      });
+      drawFx();
+    }
+    if(kind==="storm"&&tick%50===0){ fog.style.fill="#FFFFFF"; fog.style.opacity=.55; setTimeout(()=>{ fog.style.opacity=0; fog.style.fill="var(--g2)"; },140); }
+    tick++;
+  },110);
+})();
+
+// ---- local time in Guangzhou (UTC+8), colon blinks ----
+(function(){
+  const el=document.getElementById("clock");
+  const fmt=new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Shanghai",hour:"2-digit",minute:"2-digit",hour12:false});
+  const tick=()=>{ const [h,m]=fmt.format(new Date()).split(":"); el.innerHTML=`${h}<i>:</i>${m} <span class="meta">UTC+8</span>`; };
+  tick(); setInterval(tick,15000);
+})();
+
+// ---- current weather in Guangzhou (Open-Meteo, no key needed), also drives the landscape ----
+// Preview other weather with ?wx=clear|partly|cloudy|fog|rain|snow|storm
+(function(){
+  const box=document.getElementById("wx"), icon=document.getElementById("wxIcon"), temp=document.getElementById("wxTemp"), text=document.getElementById("wxText");
+  const ICONS={
+    sun:   ["....Y....",".Y.....Y.","...YYY...","..YYYYY..","Y.YYYYY.Y","..YYYYY..","...YYY...",".Y.....Y.","....Y...."],
+    moon:  ["...MMMM..",".MMMM....",".MMM.....","MMM......","MMM......","MMM......",".MMM...M.",".MMMMMMM.","...MMMM.."],
+    partly:["......Y..","....YYYY.","...YYYYY.","..CCCYYY.",".CCCCCYY.","CCCCCCCC.","CCCCCCCCC",".........","........."],
+    cloud: [".........",".........","...CCC...","..CCCCC..",".CCCCCCC.","CCCCCCCCC","CCCCCCCCC",".........","........."],
+    rain:  ["...CCC...","..CCCCC..",".CCCCCCC.","CCCCCCCCC","CCCCCCCCC",".........",".R..R..R.","R..R..R..","........."],
+    storm: ["...CCC...","..CCCCC..",".CCCCCCC.","CCCCCCCCC","CCCCYCCCC","....YY...","...YY....","....Y....","...Y....."],
+    snow:  ["...CCC...","..CCCCC..",".CCCCCCC.","CCCCCCCCC","CCCCCCCCC",".........",".S..S..S.",".........","S..S..S.."],
+    fog:   [".........","FFFFFFF..",".........","..FFFFFFF",".........","FFFFFFF..",".........","..FFFFFFF","........."]
+  };
+  const PAL={Y:"#F2B56B",M:"#E9D79B",C:"#AEB6C3",R:"#6A9BCC",S:"#CFD8E6",F:"#A7AFB9"};
+  const LABEL={clear:["Clear","晴"],partly:["Partly cloudy","多云"],cloudy:["Overcast","阴"],fog:["Fog","雾"],drizzle:["Drizzle","小雨"],
+               rain:["Rain","雨"],showers:["Showers","阵雨"],snow:["Snow","雪"],storm:["Thunderstorm","雷阵雨"]};
+  const classify=c=>c===0?"clear":c<=2?"partly":c===3?"cloudy":c<=48?"fog":c<=57?"drizzle":c<=67?"rain":c<=77?"snow":c<=82?"showers":c<=86?"snow":"storm";
+  let last=null;
+  const render=()=>{
+    if(!last) return;
+    const k=classify(last.weather_code), night=!last.is_day;
+    const ic=k==="clear"?(night?"moon":"sun"):k==="partly"?(night?"cloud":"partly"):k==="cloudy"?"cloud":
+             k==="fog"?"fog":k==="snow"?"snow":k==="storm"?"storm":"rain";
+    icon.innerHTML=ICONS[ic].flatMap((row,y)=>[...row].map((ch,x)=>ch==="."?"":`<rect x="${x}" y="${y}" width="1" height="1" fill="${PAL[ch]}"/>`)).join("");
+    temp.textContent=`${Math.round(last.temperature_2m)}°C`;
+    text.textContent=LABEL[k][lang==="zh"?1:0];
+    box.hidden=false; text.hidden=false;
+    if(window.sceneWeather) window.sceneWeather(k==="drizzle"||k==="showers"?"rain":k);
+  };
+  const forced=new URLSearchParams(location.search).get("wx");
+  const CODE={clear:0,partly:2,cloudy:3,fog:45,rain:63,snow:73,storm:95};
+  const load=()=>{
+    if(forced in CODE){ last={weather_code:CODE[forced],is_day:1,temperature_2m:24}; render(); return; }
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=23.13&longitude=113.26&current=temperature_2m,weather_code,is_day&timezone=Asia%2FShanghai")
+      .then(r=>r.json()).then(d=>{ last=d.current; render(); }).catch(()=>{});
+  };
+  load(); setInterval(load,15*60*1000);
+  document.getElementById("lang").addEventListener("click",render);
+})();
+
+// ---- header motto, typed out once ----
+(function(){
+  const el=document.getElementById("motto"), text="May everything you work for have a romantic outcome in the future.";
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){ el.textContent=text; return; }
+  let i=0;
+  (function tick(){ el.textContent=text.slice(0,++i); if(i<text.length) setTimeout(tick,text[i-1]===","||text[i-1]==="."?260:55); })();
+})();
+
+// ---- "> coding" status line ----
+(function(){
+  const el=document.getElementById("doing"), words=["coding","training models","reading papers","sleeping"];
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){ el.textContent=words[0]; return; }
+  // random order, never the same word twice in a row
+  const next=i=>{ let j; do{ j=Math.floor(Math.random()*words.length); }while(j===i); return j; };
+  let wi=next(-1), ci=0, del=false;
+  (function tick(){
+    const w=words[wi]; el.textContent=w.slice(0,ci);
+    if(!del && ci===w.length){ del=true; return setTimeout(tick,2200); }
+    if(del && ci===0){ del=false; wi=next(wi); }
+    ci+=del?-1:1; setTimeout(tick,del?35:85);
+  })();
+})();
+
+// ---- figure lightbox ----
+const lb=document.getElementById("lb"), lbImg=lb.querySelector("img");
+document.querySelectorAll("[data-lb]").forEach(a=>a.addEventListener("click",e=>{
+  e.preventDefault(); lbImg.src=a.getAttribute("href"); lbImg.alt=a.querySelector("img").alt;
+  lb.classList.add("on"); lb.setAttribute("aria-hidden","false");
+}));
+const closeLb=()=>{ lb.classList.remove("on"); lb.setAttribute("aria-hidden","true"); };
+lb.addEventListener("click",closeLb);
+addEventListener("keydown",e=>{ if(e.key==="Escape") closeLb(); });
+
+// ---- theme toggle ----
+try{ const t=localStorage.getItem("theme"); if(t) root.dataset.theme=t; }catch(e){}
+document.getElementById("theme").onclick=()=>{
+  const dark = root.dataset.theme==="dark" ||
+    (!root.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+  root.dataset.theme = dark?"light":"dark";
+  try{ localStorage.setItem("theme", root.dataset.theme); }catch(e){}
+};
+</script>
+</body>
+</html>
