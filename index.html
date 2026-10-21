@@ -229,9 +229,9 @@ section{scroll-margin-top:70px}
 .l3{fill:var(--h3);background:var(--h3)} .l4{fill:var(--h4);background:var(--h4)}
 
 .tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-/* tech-stack chips pop up like pixel keys on hover */
-.tags .chip{cursor:default;transition:border-color .12s,color .12s,background .12s}
-.tags .chip:hover{border-color:var(--accent);color:var(--accent-d);background:var(--accent-bg);
+/* tech-stack and education chips pop up like pixel keys on hover */
+.tags .chip,.edu .chip{cursor:default;transition:border-color .12s,color .12s,background .12s}
+.tags .chip:hover,.edu .chip:hover{border-color:var(--accent);color:var(--accent-d);background:var(--accent-bg);
   animation:chipPop .24s steps(3) forwards}
 @keyframes chipPop{0%{transform:none;box-shadow:none}60%{transform:translate(-2px,-4px);box-shadow:2px 4px 0 var(--accent)}100%{transform:translate(-2px,-2px);box-shadow:2px 2px 0 var(--accent)}}
 .repo{display:flex;justify-content:space-between;gap:10px;text-decoration:none;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
@@ -261,7 +261,7 @@ footer a:hover{color:var(--accent-d)}
 #lb img{max-width:min(1400px,100%);max-height:100%;background:#fff;padding:12px;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
 
 ::selection{background:var(--accent);color:#fff}
-@media (prefers-reduced-motion: reduce){.mp-title.scroll span{animation:none}.tags .chip:hover,.listen svg,.sprite,.caret,.where .time i,.scene .cloud{animation:none}.glass{transition:none}html{scroll-behavior:auto}}
+@media (prefers-reduced-motion: reduce){.mp-title.scroll span{animation:none}.tags .chip:hover,.edu .chip:hover,.listen svg,.sprite,.caret,.where .time i,.scene .cloud{animation:none}.glass{transition:none}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
