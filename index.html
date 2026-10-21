@@ -86,7 +86,7 @@ section{scroll-margin-top:70px}
   /* bleed to the card edges and dissolve into the card on the left and at the top */
   -webkit-mask-image:linear-gradient(to right,transparent,#000 55%),linear-gradient(to bottom,transparent,#000 16%);-webkit-mask-composite:source-in;
   mask-image:linear-gradient(to right,transparent,#000 55%),linear-gradient(to bottom,transparent,#000 16%);mask-composite:intersect;}
-.hero{--g0:#B9D2E8;--cloud2:#E3E7ED;--rain:#7FA3C6;--snow:#FFFFFF;--g1:#D3E3EF;--g2:#E9EEEE;--g3:#F8E2D3;--za:#D4DDD3;--zb:#C3D0BC;--fa:#B4C49C;--fb:#97AB7D;--na:#9DB27B;--nb:#80965F;--nc:#62764A;--glow:rgba(250,196,120,.55);--glow0:rgba(250,196,120,0);--star-o:0;--sun:#F2B56B;--star:#F0EEE6;--cloud:#FFFFFF;--f1:#E0403A;--f2:#FFFFFF;--t:#EDE3D2;--ts:#D6C7AE;--to:#8A7A66;--r:#C15F3C;--rd:#9E4A2E;--door:#6B5442;--win:#6A9BCC;--b:#6B5442;--sail:#F7F1E6;--hub:#3D3D3A}
+.hero{--g0:#B9D2E8;--sun-o:1;--moon-o:0;--moon:#F2CF6E;--cloud2:#E3E7ED;--rain:#7FA3C6;--snow:#FFFFFF;--g1:#D3E3EF;--g2:#E9EEEE;--g3:#F8E2D3;--za:#D4DDD3;--zb:#C3D0BC;--fa:#B4C49C;--fb:#97AB7D;--na:#9DB27B;--nb:#80965F;--nc:#62764A;--glow:rgba(250,196,120,.55);--glow0:rgba(250,196,120,0);--star-o:0;--sun:#F2B56B;--star:#F0EEE6;--cloud:#FFFFFF;--f1:#E0403A;--f2:#FFFFFF;--t:#EDE3D2;--ts:#D6C7AE;--to:#8A7A66;--r:#C15F3C;--rd:#9E4A2E;--door:#6B5442;--win:#6A9BCC;--b:#6B5442;--sail:#F7F1E6;--hub:#3D3D3A}
 .scene svg{display:block;width:100%;height:100%}
 .scene .cloud{opacity:.92;animation:drift 70s steps(46) infinite}
 .scene .c2{animation-duration:48s;animation-delay:-20s}
@@ -99,8 +99,8 @@ section{scroll-margin-top:70px}
   -webkit-mask-image:linear-gradient(to right,transparent 30%,rgba(0,0,0,.18) 58%,rgba(0,0,0,.55) 80%,#000);
   mask-image:linear-gradient(to right,transparent 30%,rgba(0,0,0,.18) 58%,rgba(0,0,0,.55) 80%,#000)}
 @container (max-width:540px){.scene,.wash{display:none}}
-:root[data-theme="dark"] .hero{--g0:#121827;--cloud2:#3B4152;--rain:#8197B5;--snow:#DCE3EE;--g1:#1E2639;--g2:#2C3247;--g3:#4A3D4B;--za:#333B48;--zb:#2C3440;--fa:#36432F;--fb:#2A3424;--na:#3C4A31;--nb:#2D3824;--nc:#1F271A;--glow:rgba(240,238,230,.28);--glow0:rgba(240,238,230,0);--star-o:1;--sun:#F0EEE6;--star:#F0EEE6;--cloud:#4A5064;--f1:#B8433C;--f2:#C9C6BA;--t:#8C8273;--ts:#726A5E;--to:#4E473E;--r:#8E4A33;--rd:#6E3826;--door:#3A3029;--win:#F2C36B;--b:#4E473E;--sail:#B8B0A2;--hub:#1A1A1A}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero{--g0:#121827;--cloud2:#3B4152;--rain:#8197B5;--snow:#DCE3EE;--g1:#1E2639;--g2:#2C3247;--g3:#4A3D4B;--za:#333B48;--zb:#2C3440;--fa:#36432F;--fb:#2A3424;--na:#3C4A31;--nb:#2D3824;--nc:#1F271A;--glow:rgba(240,238,230,.28);--glow0:rgba(240,238,230,0);--star-o:1;--sun:#F0EEE6;--star:#F0EEE6;--cloud:#4A5064;--f1:#B8433C;--f2:#C9C6BA;--t:#8C8273;--ts:#726A5E;--to:#4E473E;--r:#8E4A33;--rd:#6E3826;--door:#3A3029;--win:#F2C36B;--b:#4E473E;--sail:#B8B0A2;--hub:#1A1A1A}}
+:root[data-theme="dark"] .hero{--g0:#121827;--sun-o:0;--moon-o:1;--moon:#F2CF6E;--cloud2:#3B4152;--rain:#8197B5;--snow:#DCE3EE;--g1:#1E2639;--g2:#2C3247;--g3:#4A3D4B;--za:#333B48;--zb:#2C3440;--fa:#36432F;--fb:#2A3424;--na:#3C4A31;--nb:#2D3824;--nc:#1F271A;--glow:rgba(242,207,110,.26);--glow0:rgba(242,207,110,0);--star-o:1;--sun:#F0EEE6;--star:#F0EEE6;--cloud:#4A5064;--f1:#B8433C;--f2:#C9C6BA;--t:#8C8273;--ts:#726A5E;--to:#4E473E;--r:#8E4A33;--rd:#6E3826;--door:#3A3029;--win:#F2C36B;--b:#4E473E;--sail:#B8B0A2;--hub:#1A1A1A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero{--g0:#121827;--sun-o:0;--moon-o:1;--moon:#F2CF6E;--cloud2:#3B4152;--rain:#8197B5;--snow:#DCE3EE;--g1:#1E2639;--g2:#2C3247;--g3:#4A3D4B;--za:#333B48;--zb:#2C3440;--fa:#36432F;--fb:#2A3424;--na:#3C4A31;--nb:#2D3824;--nc:#1F271A;--glow:rgba(242,207,110,.26);--glow0:rgba(242,207,110,0);--star-o:1;--sun:#F0EEE6;--star:#F0EEE6;--cloud:#4A5064;--f1:#B8433C;--f2:#C9C6BA;--t:#8C8273;--ts:#726A5E;--to:#4E473E;--r:#8E4A33;--rd:#6E3826;--door:#3A3029;--win:#F2C36B;--b:#4E473E;--sail:#B8B0A2;--hub:#1A1A1A}}
 .avatar{display:flex;flex-direction:column;align-items:center;gap:20px;flex:none}
 .listen{display:flex;align-items:center;gap:7px;font:9px/1 "Press Start 2P",monospace;color:#C8352E;letter-spacing:.04em}
 .listen svg{width:16px;height:14px;display:block;animation:beat 1.2s steps(2) infinite}
@@ -660,7 +660,12 @@ applyLang();
   }
 
   // sun (moon at night), windmill, flowers
-  const sun=[]; for(let y=-3;y<=3;y++) for(let x=-3;x<=3;x++) if(x*x+y*y<=10) sun.push([25+x,11+y,1,"sun"]);
+  // sun by day; at night a crescent: the same disc minus a disc shifted up-right
+  const sun=[], moon=[];
+  for(let y=-3;y<=3;y++) for(let x=-3;x<=3;x++) if(x*x+y*y<=10){
+    sun.push([25+x,11+y,1,"sun"]);
+    if((x-1.8)**2+(y+1)**2>8.5) moon.push([25+x,11+y,1,"moon"]);
+  }
   [[4,64,"f1"],[9,67,"f2"],[23,65,"f1"],[27,68,"f2"],[13,69,"f1"],[20,70,"f2"],[2,69,"f2"]].forEach(([x,y,c])=>set(x,y,c));
   for(let y=38;y<=59;y++){
     const g=Math.floor((y-38)/6), l=CX-3-g, r=CX+2+g;
@@ -699,7 +704,7 @@ applyLang();
     </defs>
     <rect width="${W}" height="${H}" fill="url(#skyG)"/>
     <g style="opacity:var(--star-o)">${rects(stars)}</g>
-    <g id="sunG"><circle cx="25" cy="11" r="10" fill="url(#glowG)"/>${rects(sun)}</g>
+    <g id="sunG"><circle cx="25" cy="11" r="10" fill="url(#glowG)"/><g style="opacity:var(--sun-o)">${rects(sun)}</g><g style="opacity:var(--moon-o)">${rects(moon)}</g></g>
     <g class="cloud c1">${rects(cloud(big,0,7))}</g><g class="cloud c2">${rects(cloud(small,0,24))}</g><g id="wxClouds"></g>
     <path d="${ridge(haze)}" fill="url(#hazeG)"/>
     <path d="${ridge(far)}" fill="url(#farG)"/>
