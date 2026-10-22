@@ -29,12 +29,16 @@ jobs:
         run: python3 scripts/sync_leetcode.py
         continue-on-error: true   # keep the last good data if leetcode.cn is unreachable
 
+      # Only scheduled/manual runs save the data back to the repo (this also keeps the cron alive).
+      # Push-triggered runs just deploy the fresh data, so a slow queue can never make a push fail.
       - name: Commit refreshed data
+        if: github.event_name != 'push'
+        continue-on-error: true
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/leetcode.js
-          git diff --cached --quiet || (git commit -m "chore: sync LeetCode data" && git push)
+          git diff --cached --quiet || (git commit -m "chore: sync LeetCode data" && git pull --rebase && git push)
 
       - uses: actions/configure-pages@v5
 

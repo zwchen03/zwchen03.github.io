@@ -253,6 +253,7 @@ footer a:hover{color:var(--accent-d)}
 .term-out{flex:1;overflow:auto;padding:10px 14px;white-space:pre-wrap;word-break:break-word}
 .term-out a{color:#F0A585}
 .term .tp{color:#9FD18B}.term .tk{color:#F0A585}
+.term .hr{color:#E0403A}.term .hl{color:#F59A93}
 .term-in{display:flex;gap:8px;align-items:center;padding:8px 14px;border-top:1px solid #2E2E2B}
 .term-in input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:inherit;font:inherit;caret-color:#D97757}
 
@@ -1025,7 +1026,7 @@ document.querySelectorAll(".mail,[data-copy-email]").forEach(el=>el.addEventList
       row("open <site>",t2("打开 github / scholar / leetcode","open github / scholar / leetcode")),
       row("weather [kind]",t2("查看或切换风景画天气","show or change the weather")), row("time",t2("广州当地时间","local time in Guangzhou")),
       row("theme",t2("切换深色 / 浅色","toggle dark / light")), row("lang",t2("切换中文 / English","switch language")),
-      row("copy",t2("复制我的邮箱","copy my email")), row("clear",t2("清屏","clear the screen")), row("exit",t2("关闭终端（或按 Esc）","close (or press Esc)"))
+      row("listen",t2("♥","♥")), row("copy",t2("复制我的邮箱","copy my email")), row("clear",t2("清屏","clear the screen")), row("exit",t2("关闭终端（或按 Esc）","close (or press Esc)"))
     ].join("\n"),
     about:()=>t2("陈志伟 · 华南理工大学计算机技术硕士在读。\n热爱生活，热爱技术，研究方向为计算病理学。",
                  "Zhiwei Chen · M.Eng. student in Computer Technology, South China University of Technology.\nLoves life and technology; works on computational pathology."),
@@ -1060,6 +1061,10 @@ document.querySelectorAll(".mail,[data-copy-email]").forEach(el=>el.addEventList
     exit:()=>{ close(); return null; }
   };
   CMDS["葫芦娃"]=CMDS.huluwa;
+  // a pixel heart, drawn with the same shape as the "Listen" heart
+  const HEART=[".XXX.XXX.","XHXXXXXXX","XXXXXXXXX","XXXXXXXXX",".XXXXXXX.","..XXXXX..","...XXX...","....X...."];
+  const heart=()=>"\n"+HEART.map(r=>"  "+[...r].map(c=>c==="."?"  ":`<span class="${c==="H"?"hl":"hr"}">██</span>`).join("")).join("\n")+"\n";
+  ["listen","listen.","ty","sty","shitingyu","tingyu","听语","石听语"].forEach(k=>{ CMDS[k]=heart; });
   const hist=[]; let hi=0;
   const run=line=>{
     print(`<span class="tp">visitor@zwchen.online:~$</span> ${esc(line)}`);
